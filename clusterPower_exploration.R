@@ -3,7 +3,7 @@ library(shinythemes)
 library(shiny)
 runExample(appname = "analytic")#don't work
 
-#testgit
+
 #########cpa.binary#########
 
 # Compute the power, number of clusters needed, number of subjects per cluster needed, or other key 
@@ -85,10 +85,10 @@ cpa.binary(nclusters = 10, nsubjects = 20, p1 = 0.8, p2 = 0.5, ICC = 0.472) #pow
 # [2nd parameter set]: assume unequal between-cluster variance
 # p1 = 0.8, p2 = 0.5, sigma1 = 1, sigma2 = 1.2
 binary.sim2 = cps.binary(nsim = 1000, nsubjects = 20,
-                        nclusters = 10, p1 = 0.8,
-                        p2 = 0.5, sigma_b_sq = 1,
-                        sigma_b_sq2 = 1.2, alpha = 0.05,
-                        method = 'glmm', allSimData = FALSE)
+                         nclusters = 10, p1 = 0.8,
+                         p2 = 0.5, sigma_b_sq = 1,
+                         sigma_b_sq2 = 1.2, alpha = 0.05,
+                         method = 'glmm', allSimData = FALSE)
 binary.sim2 #ICC P_h=0.25 P_c=0.001 lmer=0.484 power = 0.78[0.753, 0.805]
 
 cpa.binary(nclusters = 10, nsubjects = 20, p1 = 0.8, p2 = 0.5, ICC = 0.25) #power=0.743
@@ -140,19 +140,20 @@ binary.sim3 #power=0.62 ICC P_h =0.233
 
 
 
-
+##############################################################
+#################Create Output Tables#########################
+##############################################################
 #funtion to generate the table columns when running cps.binary
 #input: number of stimulation, number of subjects, number of clusters, p1, p2, signma^b_1, sigma^b_2
 #output: ICC, stimulated power, analytical power for each ICC and % not converge to the table
-set.seed(1234)
 power_output_tbl <- function(nsim, nsubjects, nclusters, p1, p2, sigma_b_sq, sigma_b_sq2){
   #simulated power calculation
   binary.sim = cps.binary(nsim = nsim, nsubjects = nsubjects,
-                           nclusters = nclusters, p1 = p1,
-                           p2 = p2, sigma_b_sq = sigma_b_sq,
-                           sigma_b_sq2 = sigma_b_sq2, alpha = 0.05,
-                           method = 'glmm', allSimData = FALSE,lowPowerOverride = TRUE, poorFitOverride = TRUE,
-)
+                          nclusters = nclusters, p1 = p1,
+                          p2 = p2, sigma_b_sq = sigma_b_sq,
+                          sigma_b_sq2 = sigma_b_sq2, alpha = 0.05,
+                          method = 'glmm', allSimData = FALSE,lowPowerOverride = TRUE, poorFitOverride = TRUE,
+  )
   #calculate % of Data set where the model won't converge among the first nsim simulations
   num_not_converge <- table(binary.sim$convergence[1:nsim])
   pct_not_converge <- unname(num_not_converge[1])/(unname(num_not_converge[1])+unname(num_not_converge[2]))
@@ -190,10 +191,10 @@ test <- power_output_tbl(nsim = 100, nsubjects=20, nclusters=15, p1=0.8, p2=0.5,
 test
 
 test.sim = cps.binary(nsim = 100, nsubjects = 20,
-                        nclusters = 15, p1 = 0.8,
-                        p2 = 0.5, sigma_b_sq = 1,
-                        sigma_b_sq2 = 1, alpha = 0.05,
-                        method = 'glmm', poorFitOverride = TRUE,lowPowerOverride = TRUE)
+                      nclusters = 15, p1 = 0.8,
+                      p2 = 0.5, sigma_b_sq = 1,
+                      sigma_b_sq2 = 1, alpha = 0.05,
+                      method = 'glmm', poorFitOverride = TRUE,lowPowerOverride = TRUE)
 
 #ICC.P_c
 mean(test.sim$icc.list[1:100,1],na.rm=T)
@@ -227,25 +228,26 @@ sim_pwr_upper_CI
 test.sim$power
 
 
-# To start: sigma^b_1 = sigma^b_2 = .01, .1, 1
-# p_1 = .05 to .85 by .2 and p_2 = p_1 + c(0,.1,.3)
-# Nsubjects = 10, 20, 50
-# Nclusters (per treatment group) = 8, 15, 25, 50  
+# To start: sigma^b_1 = sigma^b_2 = .01, 1
+# p_1 = c(.05, .25, .5) and p_2 = p_1 + c(0,.1,.3)
+# Nsubjects = 20, 100
+# Nclusters (per treatment group) = 15, 50  
 
 v_power_output_tbl <- Vectorize(power_output_tbl)
-# vector has to be the same length?
+# vector has to be the same length? YES
 # output_table <- v_power_output_tbl(nsim=rep(10,3), nsubject=c(10,20,50), nclusters = c(8,15,25,50), p1=seq(from = 0.05, to = 0.85, by = 0.2), p2 = seq(from = 0.15, to = 0.95, by = 0.4), sigma_b_sq = c(0.01,0.1,1), sigma_b_sq2 = c(0.01,0.1,1))
 
 
 # create a table of all combinations of parameters
+# p2 needs to be always equal or greater than p1
 
 #first table, p1=0.05, p2=p1+c(0, 0.1, 0.3)
 parameter_set1 = expand.grid(nsim = 1000, 
-                            nsubjects = c(20,100), 
-                            ncluster = c(15,50), 
-                            p1 = c(0.05), 
-                            p2 = c(0.05,0.15,0.35),#greater or equal to p1: three separate runnings 
-                            sigma_b_sq = c(0.01,1))
+                             nsubjects = c(20,100), 
+                             ncluster = c(15,50), 
+                             p1 = c(0.05), 
+                             p2 = c(0.05,0.15,0.35),#greater or equal to p1: three separate runnings 
+                             sigma_b_sq = c(0.01,1))
 parameter_set1$sigma_b_sq2 <- parameter_set1$sigma_b_sq
 
 head(parameter_set1)
@@ -253,17 +255,34 @@ head(parameter_set1)
 v_power_output_tbl <- Vectorize(power_output_tbl)
 
 output_table1 <- v_power_output_tbl(nsim = parameter_set1$nsim, 
-                                   nsubject = parameter_set1$nsubjects, 
-                                   nclusters = parameter_set1$ncluster, 
-                                   p1 = parameter_set1$p1, 
-                                   p2 = parameter_set1$p2, 
-                                   sigma_b_sq = parameter_set1$sigma_b_sq, 
-                                   sigma_b_sq2 = parameter_set1$sigma_b_sq2)
+                                    nsubject = parameter_set1$nsubjects, 
+                                    nclusters = parameter_set1$ncluster, 
+                                    p1 = parameter_set1$p1, 
+                                    p2 = parameter_set1$p2, 
+                                    sigma_b_sq = parameter_set1$sigma_b_sq, 
+                                    sigma_b_sq2 = parameter_set1$sigma_b_sq2)
 
-df.output_table <- as.data.frame(output_table)
+df.output_table1 <- as.data.frame(output_table1)
+
+#second table, p1=0.25, p2=p1+c(0, 0.1, 0.3)
+parameter_set2 = expand.grid(nsim = 1000, 
+                             nsubjects = c(20,100), 
+                             ncluster = c(15,50), 
+                             p1 = c(0.25), 
+                             p2 = c(0.25,0.35,0.55),#greater or equal to p1: three separate runnings 
+                             sigma_b_sq = c(0.01,1))
+parameter_set2$sigma_b_sq2 <- parameter_set1$sigma_b_sq
 
 
 
+#third table, p1=0.5, p2=p1+c(0, 0.1, 0.3)
+parameter_set3 = expand.grid(nsim = 1000, 
+                             nsubjects = c(20,100), 
+                             ncluster = c(15,50), 
+                             p1 = c(0.5), 
+                             p2 = c(0.5,0.6,0.8),#greater or equal to p1: three separate runnings 
+                             sigma_b_sq = c(0.01,1))
+parameter_set3$sigma_b_sq2 <- parameter_set1$sigma_b_sq
 # When sigma is 0.01, more than 25% of simulations are singular fit (not converge) [solved by adding lowPowerOverride = TRUE]
 
 
