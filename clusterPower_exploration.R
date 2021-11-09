@@ -3,7 +3,7 @@ library(shinythemes)
 library(shiny)
 runExample(appname = "analytic")#don't work
 
-
+#testgit
 #########cpa.binary#########
 
 # Compute the power, number of clusters needed, number of subjects per cluster needed, or other key 
