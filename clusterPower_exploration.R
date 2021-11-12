@@ -248,7 +248,7 @@ parameter_set1 = expand.grid(nsim = 1000,
                              p1 = c(0.05), 
                              p2 = c(0.05,0.15,0.35),#greater or equal to p1: three separate runnings 
                              sigma_b_sq = c(0.01,1))
-parameter_set1$sigma_b_sq2 <- parameter_set1$sigma_b_sq
+parameter_set1$sigma_b_sq2 <- parameter_set2$sigma_b_sq
 
 head(parameter_set1)
 
@@ -263,7 +263,7 @@ output_table1 <- v_power_output_tbl(nsim = parameter_set1$nsim,
                                     sigma_b_sq2 = parameter_set1$sigma_b_sq2)
 
 df.output_table1 <- as.data.frame(output_table1)
-
+saveRDS(df.output_table1, file = "output_table1.rds")
 #second table, p1=0.25, p2=p1+c(0, 0.1, 0.3)
 parameter_set2 = expand.grid(nsim = 1000, 
                              nsubjects = c(20,100), 
@@ -272,7 +272,16 @@ parameter_set2 = expand.grid(nsim = 1000,
                              p2 = c(0.25,0.35,0.55),#greater or equal to p1: three separate runnings 
                              sigma_b_sq = c(0.01,1))
 parameter_set2$sigma_b_sq2 <- parameter_set1$sigma_b_sq
+output_table2 <- v_power_output_tbl(nsim = parameter_set2$nsim, 
+                                    nsubject = parameter_set2$nsubjects, 
+                                    nclusters = parameter_set2$ncluster, 
+                                    p1 = parameter_set2$p1, 
+                                    p2 = parameter_set2$p2, 
+                                    sigma_b_sq = parameter_set2$sigma_b_sq, 
+                                    sigma_b_sq2 = parameter_set2$sigma_b_sq2)
 
+df.output_table2 <- as.data.frame(output_table2)
+saveRDS(df.output_table2, file = "output_table2.rds")
 
 
 #third table, p1=0.5, p2=p1+c(0, 0.1, 0.3)
@@ -282,7 +291,19 @@ parameter_set3 = expand.grid(nsim = 1000,
                              p1 = c(0.5), 
                              p2 = c(0.5,0.6,0.8),#greater or equal to p1: three separate runnings 
                              sigma_b_sq = c(0.01,1))
-parameter_set3$sigma_b_sq2 <- parameter_set1$sigma_b_sq
+parameter_set3$sigma_b_sq2 <- parameter_set3$sigma_b_sq
+
+output_table3 <- v_power_output_tbl(nsim = parameter_set3$nsim, 
+                                    nsubject = parameter_set3$nsubjects, 
+                                    nclusters = parameter_set3$ncluster, 
+                                    p1 = parameter_set3$p1, 
+                                    p2 = parameter_set3$p2, 
+                                    sigma_b_sq = parameter_set3$sigma_b_sq, 
+                                    sigma_b_sq2 = parameter_set3$sigma_b_sq2)
+
+df.output_table3 <- as.data.frame(output_table3)
+saveRDS(df.output_table3, file = "output_table3.rds")
+
 # When sigma is 0.01, more than 25% of simulations are singular fit (not converge) [solved by adding lowPowerOverride = TRUE]
 
 
